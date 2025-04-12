@@ -26,6 +26,18 @@ Step 5: Setup Database
     npm install mongoose --save
 
     connect database and create folder models and add schema
-    
-"# ebPearlBackend" 
-"# ebPearlBackend" 
+step 6: add controller 
+        add the logic of  createtask, updateTask, gettask, getTaskByID ,updateTaskStatus
+
+step 7: test the api mannually by postman 
+        add the endpoints and test all the endpoint by CRUD operation
+
+Step 8: upload to github
+
+#Usage 
+
+step1: clone the repository 
+step2: run the npm intall
+step3: add the .env file and copdy from .env.example 
+step4: in package.json add the scripts 
+step5: npm run dev
