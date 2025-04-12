@@ -1,5 +1,5 @@
 import express from "express";
-import {getTasks, createTasks,getTaskById, updateTask, deleteTask} from "../controllers/taskController"
+import {getTasks, createTasks,getTaskById, updateTask, deleteTask, updateTaskStatus} from "../controllers/taskController"
 import validateSchema from "../middleware/validate";
 import {taskSchema, taskUpdateSchema} from "../JoiSchema/taskSchema";
 
@@ -10,6 +10,7 @@ router.post("/",validateSchema(taskSchema) ,createTasks )
 router.get("/:id", getTaskById as any)
 router.put("/:id",validateSchema(taskUpdateSchema), updateTask )
 router.delete("/:id", deleteTask as any)
+router.patch("/:id", updateTaskStatus as any)
 
 
 export default router;
