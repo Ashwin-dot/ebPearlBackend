@@ -75,7 +75,7 @@ dist
 
 **Step 5: Applying ESLint**
 
-```bash
+```
 npm install eslint @typescript-eslint/parser @typescript-eslint/eslint-plugin --save-dev
 npx eslint --init
 ```
@@ -84,24 +84,12 @@ Configure your ESLint settings using `eslint.config.mjs`.
 
 **Step 6: Add Husky for Pre-commit Hooks**
 
-```bash
+```
 npx husky install
 npx husky add .husky/pre-commit "npx prettier --write . && npx eslint ."
 ```
 
 Make sure `"prepare": "husky install"` is added in your `package.json` scripts.
-
-**Step 7: Create Folder Structure**
-
-- `src/config` - for environment and database config
-- `src/models` - for Mongoose schemas
-- `src/controllers` - for controller logic
-- `src/services` - for business logic
-- `src/routes` - for route definitions
-- `src/middleware` - for middleware like validation
-- `src/utils` - for helper functions
-- `src/app.ts` - main app configuration
-- `src/server.ts` - starting the server
 
 **Step 8: Database Setup**
 
