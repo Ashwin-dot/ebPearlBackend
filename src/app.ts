@@ -1,7 +1,8 @@
 import express from 'express'
-import taskRoutes from './routes/taskRoutes'
+import taskRoutes from './tasks/routes/taskRoutes'
 import mongoose from 'mongoose'
 import { CONFIG } from './config'
+import logger from './config/logger'
 
 const app = express()
 
@@ -13,14 +14,14 @@ const MongoDB = CONFIG.MONGODB_URI || 'mongodb://127.0.0.1:27017/tasksdb'
 const startServer = async () => {
   try {
     await mongoose.connect(MongoDB)
-    console.log(' Database Connected')
+    logger.info(' Database Connected')
 
     const PORT = CONFIG.PORT || 3000
     app.listen(PORT, () => {
-      console.log(`Server running on http://localhost:${PORT}`)
+      logger.info(`Server running on http://localhost:${PORT}`)
     })
   } catch (error) {
-    console.error('Error connecting to MongoDB:', error)
+    logger.error('Error connecting to MongoDB:', error)
   }
 }
 

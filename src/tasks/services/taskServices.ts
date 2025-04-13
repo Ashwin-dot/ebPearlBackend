@@ -1,5 +1,5 @@
 import Task from '../models/taskModel'
-import { ITask, TaskStatus } from '../types'
+import { ITask, TaskStatus } from './../types'
 
 interface QueryParams {
   page?: string

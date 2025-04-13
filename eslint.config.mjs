@@ -13,7 +13,7 @@ export default [
   },
   {
     rules: {
-      'no-console': 'off',
+      'no-console': 'warn',
     },
   },
 ]
