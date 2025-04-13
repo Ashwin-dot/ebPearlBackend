@@ -1,14 +1,13 @@
-import mongoose, { Document, Schema } from 'mongoose';
+import { Document } from 'mongoose'
 
 export enum TaskStatus {
-    PENDING = 'pending',
-    IN_PROGRESS = 'in-progress',
-    COMPLETED = 'completed',
+  PENDING = 'pending',
+  IN_PROGRESS = 'in-progress',
+  COMPLETED = 'completed',
 }
 export interface ITask extends Document {
-    title: string;
-    description: string;
-    status: TaskStatus;
-    createdAt: Date;
+  title: string
+  description: string
+  status: TaskStatus
+  createdAt: Date
 }
-

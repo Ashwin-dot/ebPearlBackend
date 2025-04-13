@@ -1,133 +1,77 @@
-import { Request, Response } from "express";
-import { ITask, TaskStatus } from "../types";
-import Task from "../models/taskModel";
+import { Request, Response } from 'express'
+import { TaskService } from '../services/taskServices'
+import { TaskStatus } from '../types'
 
-//create task
-export const createTasks = async (req: Request, res:Response)=>{
+const taskService = new TaskService()
+
+export class TaskController {
+  async createTask(req: Request, res: Response): Promise<void> {
     try {
-        const { title, description, status } = req.body;
-    
-        const newTask: ITask = new Task({
-          title,
-          description,
-          status: status || TaskStatus.PENDING,
-        });
-    
-        const savedTask = await newTask.save();
-        res.status(201).json(savedTask);
-      } catch (error) {
-        res.status(500).json({ message: 'Error creating task', error });
-      }
-}
-
-//to get all the task
-
-interface QueryParams {
-  page?: string;
-  limit?: string;
-  sortBy?: string;
-  order?: "asc" | "desc";
-  status?: TaskStatus;
-}
-
-export const getTasks = async (req: Request<{}, {}, {}, QueryParams>, res: Response) => {
-  try {
-    const {
-      page = "1",
-      limit = "10",
-      sortBy = "createdAt",
-      order = "desc",
-      status,
-    } = req.query;
-
-    const pageNumber = parseInt(page, 10);
-    const limitNumber = parseInt(limit, 10);
-    const sortOrder = order === "asc" ? 1 : -1;
-
-    const filter: Partial<{ status: TaskStatus }> = {};
-    if (status) filter.status = status;
-
-    const tasks = await Task.find(filter)
-      .sort({ [sortBy]: sortOrder })
-      .skip((pageNumber - 1) * limitNumber)
-      .limit(limitNumber);
-
-    const total = await Task.countDocuments(filter);
-
-    return res.status(200).json({
-      total,
-      page: pageNumber,
-      limit: limitNumber,
-      tasks,
-    });
-  } catch (error) {
-    return res.status(500).json({
-      message: "Error fetching tasks",
-      error,
-    });
+      const newTask = await taskService.createTask(req.body)
+      res.status(201).json(newTask)
+    } catch (error) {
+      res.status(500).json({ message: 'Error creating task', error })
+    }
   }
-};
 
-//to get the task only by single id
-export const getTaskById = async (req: Request, res:Response)=>{
+  async getTasks(req: Request, res: Response) {
     try {
-        const { id } = req.params;
-        const task = await Task.findById(id);
-    
-        if (!task) {
-          return res.status(404).json({ message: 'Task not found' });
-        }
-    
-        res.status(200).json(task);
-      } catch (error) {
-        res.status(500).json({ message: 'Error fetching task', error });
+      const tasks = await taskService.getTasks(req.query)
+      res.status(200).json(tasks)
+    } catch (error) {
+      res.status(500).json({ message: 'Error fetching tasks', error })
+    }
+  }
+
+  async getTaskById(req: Request, res: Response) {
+    try {
+      const task = await taskService.getTaskById(req.params.id)
+      if (!task) {
+        res.status(404).json({ message: 'Task not found' })
       }
+      res.status(200).json(task)
+    } catch (error) {
+      res.status(500).json({ message: 'Error fetching task', error })
+    }
+  }
+
+  async updateTask(req: Request, res: Response) {
+    try {
+      const updatedTask = await taskService.updateTask(req.params.id, req.body)
+      if (!updatedTask) {
+        res.status(404).json({ message: 'Task not found' })
+      }
+      res.status(200).json(updatedTask)
+    } catch (error) {
+      res.status(500).json({ message: 'Error updating task', error })
+    }
+  }
+
+  async deleteTask(req: Request, res: Response) {
+    try {
+      const deletedTask = await taskService.deleteTask(req.params.id)
+      if (!deletedTask) {
+        res.status(404).json({ message: 'Task not found' })
+      }
+      res.status(200).json({ message: 'Task deleted successfully' })
+    } catch (error) {
+      res.status(500).json({ message: 'Error deleting task', error })
+    }
+  }
+
+  async updateTaskStatus(req: Request, res: Response) {
+    try {
+      const { status } = req.body
+      const updatedTask = await taskService.updateTaskStatus(
+        req.params.id,
+        status as TaskStatus,
+      )
+      if (!updatedTask) {
+        res.status(404).json({ message: 'Task not found' })
+      }
+      res.status(200).json(updatedTask)
+    } catch (error) {
+      res.status(500).json({ message: 'Error updating task status', error })
+    }
+  }
 }
-
-//update the task by id
-export const updateTask = async (req: Request, res: Response) => {
-  try {
-    const updatedTask = await Task.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true, runValidators: true }
-    );
-    if (!updatedTask)  res.status(404).json({ message: 'Task not found' });
-    res.status(200).json(updatedTask);
-  } catch (error) {
-    res.status(500).json({ message: 'Error updating task', error });
-  }
-};
-
-
-//delete the task by id
-export const deleteTask = async (req: Request, res: Response) => {
-  try {
-    const deletedTask = await Task.findByIdAndDelete(req.params.id);
-    if (!deletedTask) return res.status(404).json({ message: 'Task not found' });
-
-    res.status(200).json({ message: 'Task deleted successfully' });
-  } catch (error) {
-    res.status(500).json({ message: 'Error deleting task', error });
-  }
-};
-
-
-//update the task status by id
-
-export const updateTaskStatus = async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-    const { status } = req.body;
-    const updatedTask = await Task.findByIdAndUpdate(
-      id,
-      { status },
-      { new: true, runValidators: true }
-    );
-    if (!updatedTask) return res.status(404).json({ message: 'Task not found' });
-    res.status(200).json(updatedTask);
-  } catch (error) {
-    res.status(500).json({ message: 'Error updating task status', error });
-  }
-};
-
